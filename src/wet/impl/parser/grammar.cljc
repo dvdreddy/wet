@@ -8,7 +8,7 @@
 
   template ::= (s / b / raw-block / object-expr-block / tag-expression)*
   <body> ::= template
-  b ::= #'(?s)((?!\\{\\{|\\{\\%).)*'
+  b ::= #'(\\s)?((?!\\{\\{|\\{\\%).)*'
   s ::= #'[\\s\\n\\r]*'
   <ltag> ::= <'{%'> <s>
   <rtag> ::= <s> <'%}'>
@@ -19,7 +19,7 @@
   <lbrace> ::= <s> '[' <s>
   <rbrace> ::= <s> ']' <s>
 
-  raw-body ::= #'(?s)((?!\\{\\%\\s*endraw\\s*%}).)*'
+  raw-body ::= #'(\\s)?((?!\\{\\%\\s*endraw\\s*%}).)*'
   raw-block ::= ltag <'raw'> rtag raw-body ltag <'endraw'> rtag
 
   <token> ::= #'[a-zA-Z-_][a-zA-Z0-9-_]*'

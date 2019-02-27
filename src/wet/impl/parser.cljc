@@ -72,6 +72,7 @@
 (def ^:private transformer
   {:template parse-template
    :b identity
+   :s identity
    ;; Data types
    :int read-string*
    :float read-string*

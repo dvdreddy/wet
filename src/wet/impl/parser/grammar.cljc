@@ -6,7 +6,7 @@
 (defparser PARSED-GRAMMAR "
   (* COMMON *)
 
-  template ::= (b / raw-block / object-expr-block / tag-expression)*
+  template ::= (s / b / raw-block / object-expr-block / tag-expression)*
   <body> ::= template
   b ::= #'(?s)((?!\\{\\{|\\{\\%).)*'
   s ::= #'[\\s\\n\\r]*'
@@ -83,7 +83,7 @@
 
   (* CONTROL FLOW *)
 
-  case ::= ltag <'case '> object rtag when+ else? ltag <'endcase'> rtag
+  case ::= ltag <'case '> <s> object rtag <s> when+ else? ltag <'endcase'> rtag
   if ::= ltag <'if '> <s> predicate rtag body elsif* else? ltag <'endif'> rtag
   unless ::= ltag <'unless '> <s> predicate rtag body elsif* else? ltag <'endunless'> rtag
   elsif ::= ltag <'elsif '> <s> predicate rtag body

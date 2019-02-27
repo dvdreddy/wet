@@ -12,7 +12,7 @@
                      Condition Else Filter ForLimit ForOffset
                      ForReversed Lookup When))))
 
-(defparser parse grammar/GRAMMAR)
+(def parse grammar/PARSED-GRAMMAR)
 
 (defn- parse-template [& nodes] (nodes/->Template nodes))
 

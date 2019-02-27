@@ -1,6 +1,9 @@
-(ns wet.impl.parser.grammar)
+(ns wet.impl.parser.grammar
+  (:require [instaparse.core :as insta
+             #?@(:clj [:refer [defparser]]
+                 :cljs [:refer-macros [defparser]])]))
 
-(def GRAMMAR "
+(defparser PARSED-GRAMMAR "
   (* COMMON *)
 
   template ::= (b / raw-block / object-expr-block / tag-expression)*

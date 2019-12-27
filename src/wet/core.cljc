@@ -18,7 +18,8 @@
      (as-> transformed-template
            (with-meta
              transformed-template
-             (parser/analyse transformed-template))))))
+             (apply parser/analyse transformed-template
+                    (flatten (into [] options))))))))
 
 (defn render
   "Accepts an intermediate representation produced by wet.core/parse

@@ -7,10 +7,10 @@
             [wet.impl.parser.grammar :as grammar]
             [wet.impl.parser.nodes :as nodes
              #?@(:cljs [:refer [Condition Else Filter ForLimit ForOffset
-                                ForReversed Lookup When]])])
+                                ForReversed Lookup When ObjectExpr]])])
   #?(:clj (:import (wet.impl.parser.nodes
                      Condition Else Filter ForLimit ForOffset
-                     ForReversed Lookup When))))
+                     ForReversed Lookup When ObjectExpr))))
 
 (def parse grammar/PARSED-GRAMMAR)
 
@@ -137,8 +137,27 @@
         (throw (ex-info error-message error-context)))
       :else (transform parsed-template))))
 
+(defn normalized-lookup-obj
+  [{:keys [name fns] :as lookup-node}]
+  (assert (instance? Lookup lookup-node)
+          "Normalizing a non Lookup object not supported")
+  ;; Code similar to the one from render logic
+  ;; but we are just reconstructing stuff back
+  (reduce
+    (fn [res {lookup-key :key :as coll-index}]
+      (cond (string? lookup-key)
+            (str res "." lookup-key)
+
+            (number? lookup-key)
+            (str res "[" lookup-key "]")
+
+            :else
+            (str res "[" (normalized-lookup-obj lookup-key) "]")))
+    name fns))
+
+
 (defn analyse
-  [transformed-template]
+  [transformed-template & {:as opts}]
   (let [nodes (->> transformed-template
                    (tree-seq
                      (fn [node] (satisfies? nodes/Parent node))
@@ -149,6 +168,22 @@
                      (map :name)
                      (distinct)
                      (group-by (partial contains? filters/CORE-FILTERS)))]
-    {:lookups (set (map :name lookups))
-     :core-filters (set (get filters true))
-     :custom-filters (set (get filters false))}))
+    (merge
+      {:lookups (set (map :name lookups))
+       :core-filters (set (get filters true))
+       :custom-filters (set (get filters false))}
+      (if (:detailed-lookup-info? opts)
+        {:detailed-lookup-infos
+         (->> nodes
+              (filter #(and (instance? ObjectExpr %)
+                            (instance? Lookup (:obj %))))
+              (map (fn [{lookup :obj :keys [filters]
+                         :as obj-expr}]
+                     (merge
+                       (zipmap [:start-idx :end-idx]
+                               (insta/span obj-expr))
+
+                       {:has-filters? (not (empty? filters))
+
+                        :normalized-str
+                        (normalized-lookup-obj lookup)}))))}))))

@@ -9,7 +9,7 @@
   template ::= (s / b / raw-block / object-expr-block / tag-expression)*
   <body> ::= template
   b ::= #'(\\s)?((?!\\{\\{|\\{\\%).)*'
-  s ::= #'[\\s\\n\\r]*'
+  s ::= #'[\\s\\n\\r\\v]*'
   <ltag> ::= <'{%'> <s>
   <rtag> ::= <s> <'%}'>
   dquote ::= '\"'
